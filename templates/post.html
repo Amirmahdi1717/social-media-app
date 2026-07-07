@@ -85,9 +85,13 @@
                             </div>
     
                             <div uk-lightbox>
-                                <a href="{{ post.Img.url }}">  
-                                    <img src="{{post.Img.url}}" alt="">
+                            {% if post.img %}
+                                <a href="{{ post.img.url }}">
+                                    <img src="{{ post.img.url }}" alt="Post Image">
                                 </a>
+                            {% else %}
+                                <p>این پست تصویر ندارد</p>
+                            {% endif %}
                                 <br>
                                 <h3 class="font-semibold text-lg" style="padding: 10px;">{{ post.caption }}</h3>
                             </div>

@@ -93,7 +93,12 @@
                 {% for post in posts reversed %}
                 <a href="/post/{{post.post_id}}">
                 <div class="bg-white rounded-md lg:shadow-lg shadow p-6">
-                    <img src="{{post.Img.url}}" alt="Post Image" class="rounded-md mt-2 w-full">
+                    {% if post.img %}
+                     <img src="{{ post.img.url }}" alt="Post Image" class="rounded-md mt-2 w-full">
+                    {% else %}
+                    <img src="https://via.placeholder.com/400x300?text=No+Image" alt="Default Image" class="rounded-md mt-2 w-full">
+                    {% endif %}
+                    
                     <br>
                     <p class="text-gray-600 mt-2"><strong>{{post.caption}}</strong></p>
                     <div class="mt-4 flex items-center">
