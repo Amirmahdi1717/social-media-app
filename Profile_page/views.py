@@ -10,18 +10,37 @@ from django.contrib import messages
 
 @login_required(login_url='login')
 def search(request):
-    my_profile=Profile.objects.get(user=request.user)
-    character=request.POST["username"]
-    all_objects=Profile.objects.all()
-    search_users=[]
-    for objects in all_objects:
-        if character in objects.user.username:
+    my_profile = Profile.objects.get(user=request.user)
+    character = request.POST.get('username', '').strip()  # استفاده از get برای جلوگیری از خطا
+    
+    search_users = []
+    if character:
+        # استفاده از filter به جای حلقه (بهینه‌تر)
+        results = Profile.objects.filter(user__username__icontains=character)
+        for obj in results:
             search_users.append({
-                'profile':objects,
-                'bio':objects.bio[0:83]
+                'profile': obj,
+                'bio': obj.bio[:83]  # کوتاه‌تر
             })
+    
+    return render(request, "search.html", {
+        "my_profile": my_profile,
+        "search_users": search_users,
+        "caption": character})
+# @login_required(login_url='login')
+# def search(request):
+#     my_profile=Profile.objects.get(user=request.user)
+#     character=request.POST["username"]
+#     all_objects=Profile.objects.all()
+#     search_users=[]
+#     for objects in all_objects:
+#         if character in objects.user.username:
+#             search_users.append({
+#                 'profile':objects,
+#                 'bio':objects.bio[0:83]
+#             })
 
-    return render(request,"search.html",{"my_profile":my_profile,"search_users":search_users,"caption":character})
+#     return render(request,"search.html",{"my_profile":my_profile,"search_users":search_users,"caption":character})
 
 @login_required(login_url='login')
 def post(request,post_id):
@@ -99,12 +118,6 @@ def settings(request):
         my_profile.location = new_loc
         my_profile.save()
         return redirect('index')
-        
-        # پیام برای وقتی فقط بیو یا لوکیشن عوض شده
-        if 'delete_image' not in request.POST and not request.FILES.get('image'):
-            messages.success(request, 'اطلاعات با موفقیت به‌روزرسانی شد')
-        
-        return redirect('settings')
     
     return render(request, "setting.html", {'my_profile': my_profile})
 

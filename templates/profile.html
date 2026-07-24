@@ -131,7 +131,11 @@
             <div class="divide-y divide-gray-300">
                 <div class="flex items-center justify-between py-3 px-4">
                     <div class="flex items-center space-x-4">
-                        <img src="{{profile.profile_img.url}}" class="bg-gray-200 rounded-full w-10 h-10">
+                        {% if my_profile.profile_img %}
+                            <img src="{{ my_profile.profile_img.url }}" class="header-avatar" alt="">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" class="header-avatar" alt="">
+                        {% endif %}
                         <div class="flex flex-col">
                             <span class="block font-semibold">{{profile.user.username.capitalize}}</span>
                             <span class="block text-sm text-gray-500">{{profile.followers}} followers</span>
