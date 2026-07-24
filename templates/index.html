@@ -128,11 +128,21 @@
                         <!-- profile -->
 
                         <a href="#">
-                            <img src="{{my_profile.profile_img.url}}" class="header-avatar" alt="">
+                        {% if my_profile.profile_img %}
+                            <img src="{{ my_profile.profile_img.url }}" class="header-avatar" alt="">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" class="header-avatar" alt="">
+                        {% endif %}
                         </a>
                         <div uk-drop="mode: click;offset:9" class="header_dropdown profile_dropdown border-t">
                             <ul>
-                                <center><img src="{{ my_profile.profile_img.url }}" class="circular-image" alt="Profile Image"></center>
+                                <center>
+                                    {% if my_profile.profile_img %}
+                                <img src="{{ my_profile.profile_img.url }}" class="header-avatar" alt="">
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.png' %}" class="header-avatar" alt="">
+                            {% endif %}
+                            </center>
                                     <style>
                                         .circular-image {
                                             border-radius: 50%;

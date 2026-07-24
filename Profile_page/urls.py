@@ -15,7 +15,8 @@ urlpatterns=[
     path('profile/<str:username>',views.profile,name="profile"),
     path("follow/<str:username>",views.follow,name="follow"),
     path("post/<uuid:post_id>",views.post,name="post"),
-    path('search',views.search,name="search")
+    path('search',views.search,name="search"),
+    path('delete_profile',views.delete_profile_image,name="delete_profile_image"),
 ]
 
 urlpatterns=urlpatterns+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

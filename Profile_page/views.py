@@ -6,6 +6,7 @@ from django.contrib import messages
 from .models import Profile
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 @login_required(login_url='login')
 def search(request):
@@ -70,25 +71,62 @@ def upload(request):
     my_post.save()
     return redirect('/')
 
+
 @login_required(login_url='login')
 def settings(request):
-    current_user=request.user
-    my_profile=Profile.objects.get(user=current_user)
-    if request.method=="POST":
-        if request.FILES.get('image')==None:
-            my_img=my_profile.profile_img
-        else:
-            my_img=request.FILES.get('image')
-        new_bio=request.POST["bio"]
-        new_loc=request.POST["loc"]
-        my_profile.profile_img=my_img
-        my_profile.bio=new_bio
-        my_profile.location=new_loc
+    current_user = request.user
+    my_profile = Profile.objects.get(user=current_user)
+    
+    if request.method == "POST":
+        
+        # ========== حذف عکس ==========
+        if 'delete_image' in request.POST:
+            if my_profile.profile_img:
+                my_profile.profile_img.delete(save=False)
+            my_profile.profile_img = None
+            messages.success(request, 'عکس پروفایل حذف شد')
+        
+        # ========== آپدیت عکس جدید ==========
+        elif request.FILES.get('image'):
+            my_profile.profile_img = request.FILES['image']
+            messages.success(request, 'عکس پروفایل آپدیت شد')
+        
+        # ========== آپدیت بیو و لوکیشن ==========
+        new_bio = request.POST.get('bio', my_profile.bio)
+        new_loc = request.POST.get('loc', my_profile.location)
+        
+        my_profile.bio = new_bio
+        my_profile.location = new_loc
         my_profile.save()
         return redirect('index')
         
+        # پیام برای وقتی فقط بیو یا لوکیشن عوض شده
+        if 'delete_image' not in request.POST and not request.FILES.get('image'):
+            messages.success(request, 'اطلاعات با موفقیت به‌روزرسانی شد')
+        
+        return redirect('settings')
+    
+    return render(request, "setting.html", {'my_profile': my_profile})
 
-    return render(request,"setting.html",{'my_profile':my_profile})
+# @login_required(login_url='login')
+# def settings(request):
+#     current_user=request.user
+#     my_profile=Profile.objects.get(user=current_user)
+#     if request.method=="POST":
+#         if request.FILES.get('image')==None:
+#             my_img=my_profile.profile_img
+#         else:
+#             my_img=request.FILES.get('image')
+#         new_bio=request.POST["bio"]
+#         new_loc=request.POST["loc"]
+#         my_profile.profile_img=my_img
+#         my_profile.bio=new_bio
+#         my_profile.location=new_loc
+#         my_profile.save()
+#         return redirect('index')
+        
+
+#     return render(request,"setting.html",{'my_profile':my_profile})
     
 
     
@@ -227,4 +265,34 @@ def follow(request,username):
         return redirect('/')
     return redirect(f'/profile/{username}')
 
-    
+
+# @login_required(login_url='login')
+# def delete_profile_image(request):
+#     if request.method == "POST":
+#         profile = Profile.objects.get(user=request.user)
+
+#         if profile.profile_img.name != "image.jpeg":
+#             profile.profile_img.delete(save=False)
+
+#         profile.profile_img = "image.jpeg"
+#         profile.save()
+
+#     return redirect("settings")
+@login_required(login_url='login')
+def delete_profile_image(request):
+    if request.method == "POST":
+        profile = Profile.objects.get(user=request.user)
+        
+        # اگه عکسی وجود داشت، از سرور پاکش کن
+        if profile.profile_img:
+            profile.profile_img.delete(save=False)  # فایل رو حذف می‌کنه
+        
+        # مقدار رو به None تنظیم کن (چون الان null=True هست)
+        profile.profile_img = None
+        profile.save()
+        
+        # (اختیاری) پیام موفقیت
+
+        messages.success(request, "عکس پروفایل با موفقیت حذف شد")
+        
+    return redirect("settings")

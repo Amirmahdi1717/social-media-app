@@ -8,7 +8,7 @@ reqd_user=get_user_model()
 class Profile(models.Model):
     user=models.ForeignKey(reqd_user,on_delete=models.CASCADE)
     bio=models.CharField(max_length=10000,default='Busy')
-    profile_img=models.ImageField(upload_to='media',default='image.jpeg')
+    profile_img=models.ImageField(upload_to='media',default=None,null=True,blank=True,)
     location=models.CharField(max_length=1000,blank=True)
     followers=models.IntegerField(default=0)
     following=models.IntegerField(default=0)
